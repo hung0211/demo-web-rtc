@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Call App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Video Call App</h1>
+  </header>
+
+  <main>
+    <section class="connect-section">
+      <input type="text" id="nameInput" placeholder="Nhập tên của bạn">
+      <button id="connectBtn">Kết nối</button>
+    </section>
+
+    <section class="client-list-section">
+      <h2>Danh sách thiết bị:</h2>
+      <ul id="clientList"></ul>
+    </section>
+
+    <section class="call-controls">
+      <button id="callButton" disabled>Gọi</button>
+      <button id="hangupButton" disabled>Kết thúc</button>
+    </section>
+
+    <section class="videos">
+      <video id="localVideo" autoplay playsinline muted></video>
+      <video id="remoteVideo" autoplay playsinline></video>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

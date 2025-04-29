@@ -1,0 +1,66 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    text-align: center;
+  }
+  
+  header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    font-size: 24px;
+  }
+  
+  .connect-section, .client-list-section, .call-controls {
+    margin: 20px;
+  }
+  
+  input, button {
+    padding: 10px;
+    margin: 10px;
+    font-size: 16px;
+  }
+  
+  button {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  #clientList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  #clientList li {
+    background: white;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  
+  .videos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  video {
+    width: 300px;
+    height: 220px;
+    margin: 10px;
+    border: 2px solid #333;
+    border-radius: 8px;
+  }
+  

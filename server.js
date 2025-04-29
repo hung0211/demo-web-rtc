@@ -1,41 +1,35 @@
-const fs = require('fs');
+const express = require("express");
 const http = require("http");
-const express = require('express');
-const WebSocket = require('ws');
-const path = require('path');
+const WebSocket = require("ws");
+const path = require("path");
 
 const app = express();
-const options = {
-  key: fs.readFileSync('./certs/key.pem'),
-  cert: fs.readFileSync('./certs/cert.pem')
-};
+const server = http.createServer(app); 
 
-const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 const clients = new Map();
 const activeCalls = new Map();
 
-wss.on('connection', (ws) => {
+wss.on("connection", (ws) => {
   let clientName = null;
 
-  ws.on('message', (message) => {
+  ws.on("message", (message) => {
     try {
       const data = JSON.parse(message);
 
-      if (data.type === 'register') {
+      if (data.type === "register") {
         clientName = data.name;
         clients.set(clientName, ws);
         broadcastClients();
       }
 
-      if (data.type === 'offer') {
+      if (data.type === "offer") {
         if (activeCalls.has(data.target)) {
-          let oldCaller = activeCalls.get(data.target);
+          const oldCaller = activeCalls.get(data.target);
           if (clients.has(oldCaller)) {
-            clients.get(oldCaller).send(JSON.stringify({ type: 'endCall' }));
+            clients.get(oldCaller).send(JSON.stringify({ type: "endCall" }));
           }
         }
         activeCalls.set(data.target, data.sender);
@@ -43,19 +37,19 @@ wss.on('connection', (ws) => {
         forwardMessage(data);
       }
 
-      if (data.type === 'answer' || data.type === 'candidate') {
+      if (["answer", "candidate"].includes(data.type)) {
         forwardMessage(data);
       }
 
-      if (data.type === 'endCall') {
+      if (data.type === "endCall") {
         endCall(data.sender);
       }
-    } catch (error) {
-      console.error('Lỗi xử lý tin nhắn:', error);
+    } catch (err) {
+      console.error("Lỗi xử lý tin nhắn:", err);
     }
   });
 
-  ws.on('close', () => {
+  ws.on("close", () => {
     if (clientName) {
       endCall(clientName);
       clients.delete(clientName);
@@ -66,29 +60,28 @@ wss.on('connection', (ws) => {
 
 function broadcastClients() {
   const clientList = Array.from(clients.keys());
-  for (const [name, client] of clients.entries()) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ type: 'clientList', clients: clientList }));
-    }
-  }
+  clients.forEach((ws) => {
+    ws.send(JSON.stringify({ type: "clientList", clients: clientList }));
+  });
 }
 
 function forwardMessage(data) {
-  const targetClient = clients.get(data.target);
-  if (targetClient && targetClient.readyState === WebSocket.OPEN) {
-    targetClient.send(JSON.stringify(data));
+  const target = clients.get(data.target);
+  if (target && target.readyState === WebSocket.OPEN) {
+    target.send(JSON.stringify(data));
   }
 }
 
 function endCall(client) {
-  if (activeCalls.has(client)) {
-    const partner = activeCalls.get(client);
+  const partner = activeCalls.get(client);
+  if (partner) {
     activeCalls.delete(client);
     activeCalls.delete(partner);
-    forwardMessage({ type: 'endCall', target: partner });
+    forwardMessage({ type: "endCall", target: partner });
   }
 }
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server chạy tại http://localhost:${PORT}`));
-
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
